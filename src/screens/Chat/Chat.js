@@ -16,13 +16,14 @@ import api from '@src/utils/api';
 import {DialogLoading} from '@rneui/base/dist/Dialog/Dialog.Loading';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 
-const Chat = ({route, navigation}) => {
+const Chat = ({navigation}) => {
+  const [askLoading, setAskLoading] = useState(false);
   const [bool, setBool] = useState(false);
   const [reply, setReply] = useState('');
   const [chatMessages, setChatMessages] = useState([]);
   const bottom = useRef();
   const [appId, setAppId] = useState('');
-  const {refetch, isLoading} = useQuery({
+  const {isLoading} = useQuery({
     queryKey: ['chats', appId],
     queryFn: () => api.chats(appId),
     onSuccess: res => {
@@ -31,10 +32,12 @@ const Chat = ({route, navigation}) => {
       }
     },
     refetchOnWindowFocus: false,
+    enabled: !!appId,
   });
   const {mutate: askQuestion} = useMutation({
     mutationFn: async () => {
       if (reply) {
+        setAskLoading(true);
         await api.createChats({
           appId: appId,
           text: reply,
@@ -57,7 +60,6 @@ const Chat = ({route, navigation}) => {
           },
         ]);
       }
-      // refetch();
     },
   });
 
@@ -69,9 +71,6 @@ const Chat = ({route, navigation}) => {
         me: false,
         complete: true,
       });
-    },
-    onSuccess: res => {
-      // refetch();
     },
   });
 
@@ -162,6 +161,7 @@ const Chat = ({route, navigation}) => {
           handleMessage(assistantOutput, false);
         } else if (event.type === 'close') {
           setReply('');
+          setAskLoading(false);
           // bottom.current?.scrollToEnd({animated: false, bottom: -30});
         }
       };
@@ -191,10 +191,6 @@ const Chat = ({route, navigation}) => {
     navigation.setOptions({title: 'ChatGPT'});
   }, [navigation]);
 
-  // useEffect(() => {
-  //   bottom.current?.scrollToEnd({animated: false, bottom: -30});
-  // }, [chatMessages, bottom]);
-
   return (
     <View style={styles.messagingscreen}>
       <View
@@ -207,7 +203,7 @@ const Chat = ({route, navigation}) => {
             ref={bottom}
             data={chatMessages}
             renderItem={({item}) => <BubbleMessage item={item} />}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => index}
             inverted
             contentContainerStyle={{flexDirection: 'column-reverse'}}
           />
@@ -226,21 +222,15 @@ const Chat = ({route, navigation}) => {
             placeholderTextColor={'#aaa'}
           />
           <TouchableOpacity
+            disabled={askLoading}
             style={styles.messagingInputIcon}
             onPress={askQuestion}>
             <IonIcon name="send" size={30} color={'black'} />
           </TouchableOpacity>
         </View>
-        {/* <Pressable
-          style={styles.messagingbuttonContainer}
-          onPress={askQuestion}>
-          <View>
-            <Text style={{color: '#f2f0f1', fontSize: 20}}>SEND</Text>
-          </View>
-        </Pressable> */}
       </View>
     </View>
   );
 };
 
-export default Chat;
+export default React.memo(Chat);

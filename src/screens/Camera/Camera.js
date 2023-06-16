@@ -24,9 +24,7 @@ import {useEffect} from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import {useIsFocused} from '@react-navigation/core';
-import {examplePlugin} from './FrameProcessors';
 import {useIsForeground} from '@src/hooks/useIsForeground';
-import {StatusBarBlurBackground} from './StatusBarBlurBackground';
 import {CONTENT_SPACING, SAFE_AREA_PADDING} from '@src/Constants';
 import {CaptureButton} from './CaptureButton';
 import {LabelCam} from './LabelCam';
@@ -311,8 +309,6 @@ export function CameraPage({navigation}) {
         enabled={isCameraInitialized && isActive}
         setIsPressingButton={setIsPressingButton}
       />
-
-      <StatusBarBlurBackground />
 
       <View style={styles.rightButtonRow}>
         {supportsCameraFlipping && (

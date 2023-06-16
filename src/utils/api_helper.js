@@ -7,7 +7,7 @@ import axios from 'axios';
 // }
 
 //apply base url for axios
-export const API_URL = 'http://192.168.1.7:3000/';
+export const API_URL = 'https://backend-tb2ml.vercel.app/';
 // const dispatch = useDispatch();
 
 export const axiosApi = axios.create({

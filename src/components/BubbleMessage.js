@@ -1,10 +1,14 @@
-/* eslint-disable react/react-in-jsx-scope */
+import Clipboard from '@react-native-clipboard/clipboard';
 import {styles} from '@src/screens/Chat/styles';
-import dayjs from 'dayjs';
-import {Text, View} from 'react-native';
+import React from 'react';
+import {Text, ToastAndroid, View} from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 
 const BubbleMessage = ({item}) => {
+  const copyToClipboard = text => {
+    Clipboard.setString(text);
+    ToastAndroid.show('Copied to clipboard!', ToastAndroid.BOTTOM);
+  };
   return (
     <View>
       <View
@@ -26,15 +30,26 @@ const BubbleMessage = ({item}) => {
                 ? styles.mmessage
                 : [styles.mmessage, {backgroundColor: 'rgb(194, 243, 194)'}]
             }>
-            <Text style={{color: 'black'}}>{item.text}</Text>
+            <Text style={{color: 'black'}} selectable>
+              {item.text}
+            </Text>
           </View>
+          {!item.me && (
+            <IonIcon
+              name="clipboard-outline"
+              size={22}
+              color="#aaa"
+              style={styles.mvatar}
+              onPress={() => copyToClipboard(item.text)}
+            />
+          )}
         </View>
-        <Text style={{marginLeft: 40}}>
+        {/* <Text style={{marginLeft: 40,}}>
           {dayjs(item.createdAt).format('HH:MM')}
-        </Text>
+        </Text> */}
       </View>
     </View>
   );
 };
 
-export default BubbleMessage;
+export default React.memo(BubbleMessage);
